@@ -5,4 +5,4 @@ SET(sources
 
 )
 
-ADD_EXECUTABLE(lang.exe ${sources})
+ADD_EXECUTABLE(lang ${sources})
