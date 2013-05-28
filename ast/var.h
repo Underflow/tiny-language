@@ -5,9 +5,9 @@
 
 class Var : public Exp
 {
-	const VarDecl* decl_;
+    const VarDecl* decl_;
 
-public:
-	Var(VarDecl* decl);
-	virtual void Pretty(std::ostream& strm) const;
+    public:
+    Var(VarDecl* decl);
+    virtual void Pretty(std::ostream& strm) const;
 };

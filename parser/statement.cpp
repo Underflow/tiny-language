@@ -1,5 +1,4 @@
-#pragma once
-
+#include <stdexcept>
 #include <memory>
 
 #include "../ast/statement.h"
@@ -16,61 +15,61 @@ static std::unique_ptr<Block> ParseBlock(Lexer& in, Context& ctx);
 
 std::unique_ptr<Statement> ParseVarDecl(Lexer& in, Context& ctx)
 {
-	auto ty = in.Get<std::string>();
+    auto ty = in.Get<std::string>();
 
-	if (in.Is<std::string>())
-	{
-		auto id = in.Get<std::string>();
+    if (in.Is<std::string>())
+    {
+        auto id = in.Get<std::string>();
 
-		std::unique_ptr<Exp> val(nullptr);
-		if (in.Is<Affect>())
-		{
-			in.Get<Affect>();
-			val = ParseExp(in, ctx);
+        std::unique_ptr<Exp> val(nullptr);
+        if (in.Is<Affect>())
+        {
+            in.Get<Affect>();
+            val = ParseExp(in, ctx);
 
-			if (in.Is<Semicolon>())
-				in.Get<Semicolon>();
-			else
-				throw std::exception("expected ';'");
-		}
-		auto vd = make_unique<VarDecl>(ctx.TypeId(ty), id, std::move(val));
-		ctx.DeclVar(id, vd.get());
+            if (in.Is<Semicolon>())
+                in.Get<Semicolon>();
+            else
+                throw std::runtime_error("expected ';'");
+        }
+        auto vd = make_unique<VarDecl>(ctx.TypeId(ty), id, std::move(val));
+        ctx.DeclVar(id, vd.get());
 
-		return std::move(vd);
-	}
-	else
-		throw std::exception("Expected identifier");
+        return std::move(vd);
+    }
+    else
+        throw std::runtime_error("Expected identifier");
 }
 
 std::unique_ptr<Statement> Stmt(Lexer& in, Context& ctx)
 {
-	auto ty = in.Peek<std::string>();
+    auto ty = in.Peek<std::string>();
 
-	if (ty && ctx.TypeExists(ty->value()))
-		return ParseVarDecl(in, ctx);
+    if (ty && ctx.TypeExists(ty->value()))
+        return ParseVarDecl(in, ctx);
 
-	std::unique_ptr<Statement> res(nullptr);
+    std::unique_ptr<Statement> res(nullptr);
 
     if (in.Is<Keyword>() && in.Peek<Keyword>()->value() == Keyword::Return)
-	{
-		in.Get<Keyword>();
-		res = make_unique<Return>(ParseExp(in, ctx));
-	}
-	else
-		res = ParseExp(in, ctx);
+    {
+        in.Get<Keyword>();
+        res = make_unique<Return>(ParseExp(in, ctx));
+    }
+    else
+        res = ParseExp(in, ctx);
 
-	if (in.Is<Semicolon>())
-		in.Get<Semicolon>();
-	else
-		throw std::exception("expected ';'");
+    if (in.Is<Semicolon>())
+        in.Get<Semicolon>();
+    else
+        throw std::runtime_error("expected ';'");
 
-	return std::move(res);
+    return std::move(res);
 }
 
 std::unique_ptr<Ast> Parse(Lexer& in)
 {
-	Context ctx;
-	return ParseBlock(in, ctx);
+    Context ctx;
+    return ParseBlock(in, ctx);
 }
 
 std::unique_ptr<Control> ParseIf(Lexer& in, Context& ctx)
@@ -81,12 +80,12 @@ std::unique_ptr<Control> ParseIf(Lexer& in, Context& ctx)
         in.Get<Keyword>();
 
         if (!in.Is<Parenthesis>() || in.Get<Parenthesis>() != Parenthesis::LeftParenthesis)
-            throw std::exception("expected '(' after if keyword");
+            throw std::runtime_error("expected '(' after if keyword");
 
         auto cond = ParseExp(in, ctx);
 
         if (!in.Is<Parenthesis>() || in.Get<Parenthesis>() != Parenthesis::RightParenthesis)
-            throw std::exception("expected ')' after if condition");
+            throw std::runtime_error("expected ')' after if condition");
 
         auto if_block = ParseBlock(in, ctx);
 
@@ -102,7 +101,7 @@ std::unique_ptr<Control> ParseIf(Lexer& in, Context& ctx)
 
         return make_unique<If>(cond, if_block, else_block);
     }
-    throw std::exception("Why the fuck is my parser in an 'if' rule ?");
+    throw std::runtime_error("Why the fuck is my parser in an 'if' rule ?");
 }
 
 std::unique_ptr<Control> ParseCompound(Lexer& in, Context& ctx)
@@ -121,7 +120,7 @@ std::unique_ptr<Block> ParseBlock(Lexer& in, Context& ctx)
     std::unique_ptr<Block> b = make_unique<Block>();
 
     if (in.Is<CurlyBracket>()
-        && in.Get<CurlyBracket>() == CurlyBracket::LeftCurlyBracket)
+            && in.Get<CurlyBracket>() == CurlyBracket::LeftCurlyBracket)
     {
         ctx.PushScope();
         while (!in.Is<CurlyBracket>())

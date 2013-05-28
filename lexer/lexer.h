@@ -1,10 +1,12 @@
 #pragma once
 
-#include <memory>
-#include <fstream>
-#include <deque>
+#include <stdexcept>
 #include <iostream>
+#include <fstream>
+#include <memory>
 #include <string>
+#include <deque>
+
 #include "token.h"
 
 enum class LowOperator
@@ -38,7 +40,7 @@ enum class CompOperator
     Greater,
     Less,
     GreaterOrEqual,
-    LessOrEqual,
+    LessOrEqual
 };
 
 enum class Bracket
@@ -61,7 +63,7 @@ enum class Parenthesis
 
 class Lexer
 {
-private:
+    private:
     std::ifstream strm_;
     std::deque<std::unique_ptr<AbstractToken>> tokens_;
 
@@ -222,19 +224,19 @@ private:
         return strm_.peek() == '}';
     }
 
-	bool IsAffect()
-	{
-		return strm_.peek() == '=';
-	}
+    bool IsAffect()
+    {
+        return strm_.peek() == '=';
+    }
 
-	bool IsSemicolon()
-	{
-		return strm_.peek() == ';';
-	}
+    bool IsSemicolon()
+    {
+        return strm_.peek() == ';';
+    }
 
     void GetToken()
     {
-		Clean();
+        Clean();
         if (IsAlpha())
             GetAlpha();
         else if (IsNumeric())
@@ -246,50 +248,50 @@ private:
         else if (IsComparator())
             GetComparator();
         else if (IsLeftParenthesis())
-		{
-			strm_.get();
+        {
+            strm_.get();
             tokens_.push_back(make_token<Token<Parenthesis>>(Parenthesis::LeftParenthesis));
-		}
+        }
         else if (IsRightParenthesis())
-		{
-			strm_.get();
+        {
+            strm_.get();
             tokens_.push_back(make_token<Token<Parenthesis>>(Parenthesis::RightParenthesis));
-		}
+        }
         else if (IsLeftBracket())
-		{
-			strm_.get();
+        {
+            strm_.get();
             tokens_.push_back(make_token<Token<Bracket>>(Bracket::LeftBracket));
-		}
+        }
         else if (IsRightBracket())
-		{
-			strm_.get();
+        {
+            strm_.get();
             tokens_.push_back(make_token<Token<Bracket>>(Bracket::RightBracket));
-		}
+        }
         else if (IsLeftCurlyBracket())
-		{
-			strm_.get();
+        {
+            strm_.get();
             tokens_.push_back(make_token<Token<CurlyBracket>>(CurlyBracket::LeftCurlyBracket));
-		}
+        }
         else if (IsRightCurlyBracket())
-		{
-			strm_.get();
+        {
+            strm_.get();
             tokens_.push_back(make_token<Token<CurlyBracket>>(CurlyBracket::RightCurlyBracket));
-		}
-		else if (IsAffect())
-		{
-			strm_.get();
-			tokens_.push_back(make_token<Token<Affect>>(Affect()));
-		}
-		else if (IsSemicolon())
-		{
-			strm_.get();
-			tokens_.push_back(make_token<Token<Semicolon>>(Semicolon()));
-		}
-		else
-			tokens_.push_back(make_token<Token<TokEOF>>(TokEOF()));
+        }
+        else if (IsAffect())
+        {
+            strm_.get();
+            tokens_.push_back(make_token<Token<Affect>>(Affect()));
+        }
+        else if (IsSemicolon())
+        {
+            strm_.get();
+            tokens_.push_back(make_token<Token<Semicolon>>(Semicolon()));
+        }
+        else
+            tokens_.push_back(make_token<Token<TokEOF>>(TokEOF()));
     }
 
-public:
+    public:
     Lexer(const std::string& filename)
         : strm_(filename)
     {
@@ -299,10 +301,10 @@ public:
     template <class T>
         bool Is()
         {
-                        if (tokens_.empty())
-                        {
-                                GetToken();
-                        }
+            if (tokens_.empty())
+            {
+                GetToken();
+            }
             return dynamic_cast<Token<T>*>(tokens_.front().get())
                 != nullptr;
         }
@@ -320,7 +322,7 @@ public:
                 GetToken();
             Token<TokenType>* tok = dynamic_cast<Token<TokenType>*>(tokens_.front().get());
             if (!tok)
-                throw std::exception("Parse error, invalid cast on Lexer::Get");
+                throw std::runtime_error("Parse error, invalid cast on Lexer::Get");
             Token<TokenType> res = *tok;
 
             tokens_.pop_front();

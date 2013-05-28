@@ -2,15 +2,15 @@
 
 Context::Context()
 {
-	types_["int"] = 0;
-	types_["float"] = 1;
-	PushScope();
+    types_["int"] = 0;
+    types_["float"] = 1;
+    PushScope();
 }
 
 
 bool Context::TypeExists(const std::string& ty) const
 {
-	return types_.find(ty) != types_.end();
+    return types_.find(ty) != types_.end();
 }
 
 void Context::PushScope()
@@ -25,24 +25,24 @@ void Context::PopScope()
 
 void Context::DeclVar(const std::string& varname, VarDecl* decl)
 {
-	vars_.back()[varname] = decl;
+    vars_.back()[varname] = decl;
 }
 
 VarDecl* Context::GetVar(const std::string& varname) const
 {
-	for (auto t = vars_.rbegin(); t != vars_.rend(); ++t)
-	{
-		auto& scope = *t;
-		auto iter = scope.find(varname);
+    for (auto t = vars_.rbegin(); t != vars_.rend(); ++t)
+    {
+        auto& scope = *t;
+        auto iter = scope.find(varname);
 
-		if (iter != scope.end())
-			return iter->second;
-	}
+        if (iter != scope.end())
+            return iter->second;
+    }
 
-	return nullptr;
+    return nullptr;
 }
 
 int Context::TypeId(const std::string& ty)
 {
-	return types_[ty];
+    return types_[ty];
 }

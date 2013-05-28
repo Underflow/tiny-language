@@ -1,5 +1,7 @@
 PROJECT(Lanus CXX)
 
+SET(CMAKE_CXX_FLAGS "-std=c++0x")
+
 SET(sources
     ast/neg.cpp
     ast/var.cpp

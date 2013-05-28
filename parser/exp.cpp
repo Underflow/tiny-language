@@ -1,4 +1,4 @@
-#pragma once
+#include <stdexcept>
 
 #include "context.h"
 #include "../lexer/lexer.h"
@@ -18,21 +18,21 @@ std::unique_ptr<Exp> Term(Lexer& in, Context& ctx)
 {
     if (in.Is<int>())
         return make_unique<IntLit>(in.Get<int>());
-	if (in.Is<std::string>())
-	{
-		std::string var = in.Get<std::string>();
-		auto par = in.Peek<Parenthesis>();
-		/*
-		if (par && par->value() == Parenthesis::LeftParenthesis)
-			return make_unique<Funcall>(var, ParseArgs(in, ctx));
-		*/
-		VarDecl* vd = ctx.GetVar(var);
-		if (!vd)
-			throw std::exception("invalid identifier");
-		return make_unique<Var>(vd);
-	}
-	
-	throw std::exception("invalid token");
+    if (in.Is<std::string>())
+    {
+        std::string var = in.Get<std::string>();
+        auto par = in.Peek<Parenthesis>();
+        /*
+           if (par && par->value() == Parenthesis::LeftParenthesis)
+           return make_unique<Funcall>(var, ParseArgs(in, ctx));
+           */
+        VarDecl* vd = ctx.GetVar(var);
+        if (!vd)
+            throw std::runtime_error("invalid identifier");
+        return make_unique<Var>(vd);
+    }
+
+    throw std::runtime_error("invalid token");
 }
 
 
@@ -70,21 +70,21 @@ std::unique_ptr<Exp> CompExp(Lexer& in, Context& ctx)
 
 std::unique_ptr<Exp> ParseExp(Lexer& in, Context& ctx)
 {
-	return LowExp(in, ctx);
+    return LowExp(in, ctx);
 }
 
 std::unique_ptr<Exp> Paren(Lexer& in, Context& ctx)
 {
     if (in.Is<LowOperator>())
     {
-		if (in.Get<LowOperator>() == LowOperator::Sub)
+        if (in.Get<LowOperator>() == LowOperator::Sub)
             return make_unique<Neg>(LowExp(in, ctx));
     }
     if (in.Is<Parenthesis>())
     {
         if (in.Get<Parenthesis>() == Parenthesis::LeftParenthesis)
         {
-			auto res = LowExp(in, ctx);
+            auto res = LowExp(in, ctx);
             if (in.Is<Parenthesis>()
                     && in.Get<Parenthesis>() == Parenthesis::RightParenthesis)
                 return res;
