@@ -22,7 +22,7 @@ comp: low_exp { ("<" | "==" | ">" | ">=" | "<=") low_exp }
 term: "id"
 -     | "num"
     | funcall;
-funcall: "id" "(" { exp "," } ")";
+funcall: ["@"] "id" "(" { exp "," } ")";
 
 - num: float | int | bool;
 
