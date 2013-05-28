@@ -1,11 +1,16 @@
-#include "stdio.h"
+#include <iostream>
+
 #include "lexer.h"
+#include "../parser/parser.h"
 
-int main()
+int main(int argc, char** argv)
 {
-    Lexer lex("test.tl");
-
-    Token<int> *tok3 = lex.Peek<int>(2);
-    printf("Token : %d\n", tok3->value());
+    Lexer l(argv[1]);
+    try {
+        auto res = Parse(l);
+        res->Pretty(std::cout);
+    } catch (std::exception& e) {
+        std::cerr << e.what();
+    }
     return 0;
 }

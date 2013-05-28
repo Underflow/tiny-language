@@ -1,6 +1,10 @@
+#pragma once
+
 #include <memory>
 #include <fstream>
 #include <deque>
+#include <iostream>
+#include <string>
 #include "token.h"
 
 enum class LowOperator
@@ -23,6 +27,8 @@ class If {};
 class Else {};
 
 class Return {};
+
+class TokEOF {};
 
 enum class CompOperator
 {
@@ -100,10 +106,10 @@ private:
     void GetNumeric()
     {
         std::string num;
+        Clean();
         while(IsNumeric())
             num += strm_.get();
 
-        Clean();
         tokens_.push_back(make_token<Token<int>>(std::stoi(num)));
     }
 
@@ -116,7 +122,7 @@ private:
 
     void GetLowOp()
     {
-        char current = strm_.peek();
+        char current = strm_.get();
         if(current == '+')
             tokens_.push_back(make_token<Token<LowOperator>>(LowOperator::Add));
         if(current == '-')
@@ -133,7 +139,7 @@ private:
 
     void GetHighOp()
     {
-        char current = strm_.peek();
+        char current = strm_.get();
         if(current == '/')
             tokens_.push_back(make_token<Token<HighOperator>>(HighOperator::Divide));
         if(current == '*')
@@ -209,28 +215,31 @@ private:
 
     void GetToken()
     {
-        if(IsAlpha())
+                Clean();
+        if (IsAlpha())
             GetAlpha();
-        else if(IsNumeric())
+        else if (IsNumeric())
             GetNumeric();
-        else if(IsLowOp())
+        else if (IsLowOp())
             GetLowOp();
-        else if(IsHighOp())
+        else if (IsHighOp())
             GetHighOp();
-        else if(IsComparator())
+        else if (IsComparator())
             GetComparator();
-        else if(IsLeftParenthesis())
+        else if (IsLeftParenthesis())
             tokens_.push_back(make_token<Token<Parenthesis>>(Parenthesis::LeftParenthesis));
-        else if(IsRightParenthesis())
+        else if (IsRightParenthesis())
             tokens_.push_back(make_token<Token<Parenthesis>>(Parenthesis::RightParenthesis));
-        else if(IsLeftBracket())
+        else if (IsLeftBracket())
             tokens_.push_back(make_token<Token<Bracket>>(Bracket::LeftBracket));
-        else if(IsRightBracket())
+        else if (IsRightBracket())
             tokens_.push_back(make_token<Token<Bracket>>(Bracket::RightBracket));
-        else if(IsLeftCurlyBracket())
+        else if (IsLeftCurlyBracket())
             tokens_.push_back(make_token<Token<CurlyBracket>>(CurlyBracket::LeftCurlyBracket));
-        else if(IsRightCurlyBracket())
+        else if (IsRightCurlyBracket())
             tokens_.push_back(make_token<Token<CurlyBracket>>(CurlyBracket::RightCurlyBracket));
+                else
+                        tokens_.push_back(make_token<Token<TokEOF>>(TokEOF()));
     }
 
 public:
@@ -243,6 +252,10 @@ public:
     template <class T>
         bool Is()
         {
+                        if (tokens_.empty())
+                        {
+                                GetToken();
+                        }
             return dynamic_cast<Token<T>*>(tokens_.front().get())
                 != nullptr;
         }
@@ -254,19 +267,24 @@ public:
         }
 
     template <class TokenType>
-        Token<TokenType> Get()
+        TokenType Get()
         {
-            if(tokens_.empty())
+            if (tokens_.empty())
                 GetToken();
-            Token<TokenType> tok = *dynamic_cast<Token<TokenType>*>(tokens_.front().get());
+            Token<TokenType>* tok = dynamic_cast<Token<TokenType>*>(tokens_.front().get());
+            if (!tok)
+                throw std::exception("Parse error, invalid cast on Lexer::Get");
+            Token<TokenType> res = *tok;
+
             tokens_.pop_front();
-            return tok;
+            return res.value();
         }
+
     template <class TokenType>
         Token<TokenType>* Peek(int lookahead = 1)
         {
             int late = lookahead - tokens_.size() + 1;
-            while(late)
+            while (late)
             {
                 GetToken();
                 --late;

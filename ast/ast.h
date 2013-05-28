@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iofwd>
+#include <iostream>
 
 class Ast
 {
     public:
-        virtual void Pretty(std::ostream& ostr) = 0;
+        virtual void Pretty(std::ostream& ostr) const = 0;
 };

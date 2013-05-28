@@ -1,13 +1,13 @@
 #pragma once
 #include <memory>
 
-class AbstractToken {
+class AbstractToken
+{
     public:
         virtual ~AbstractToken() {}
 };
 
 template <class T>
-
 class Token : public AbstractToken
 {
     T value_;

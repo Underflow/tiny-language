@@ -1,8 +1,13 @@
-PROJECT(Lanus C++)
+PROJECT(Lanus CXX)
 
-SET(sources 
+SET(sources
+    ast/binop.cpp
+    ast/neg.cpp
+    ast/intlit.cpp
 
+    lexer/main.cpp
 
+    parser/exp.cpp
 )
 
 ADD_EXECUTABLE(lang ${sources})
