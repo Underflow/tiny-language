@@ -84,10 +84,10 @@ private:
     {
         std::string id;
 
-        Clean();
         while (IsAlpha())
             id += strm_.get();
 
+        Clean();
         tokens_.push_back(make_token<Token<std::string>>(id));
     }
 
@@ -256,20 +256,21 @@ public:
     template <class TokenType>
         Token<TokenType> Get()
         {
+            if(tokens_.empty())
+                GetToken();
             Token<TokenType> tok = *dynamic_cast<Token<TokenType>*>(tokens_.front().get());
             tokens_.pop_front();
             return tok;
         }
-
-    template <class Token>
-        Token* Peek(int lookahead = 1)
+    template <class TokenType>
+        Token<TokenType>* Peek(int lookahead = 1)
         {
-            int late = tokens_.size() - lookahead + 1;
+            int late = lookahead - tokens_.size() + 1;
             while(late)
             {
                 GetToken();
                 --late;
             }
-            return dynamic_cast<Token*>(tokens_[lookahead].get());
+            return dynamic_cast<Token<TokenType>*>(tokens_[lookahead].get());
         }
 };
