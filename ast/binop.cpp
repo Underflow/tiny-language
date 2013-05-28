@@ -9,6 +9,46 @@ void Binop::Pretty(std::ostream& strm) const
     strm << ")";
 }
 
+void Binop::x86Gen(std::ostream& strm) const
+{
+    lhs_->x86Gen(strm);
+    rhs_->x86Gen(strm);
+    strm <<
+        "pop eax\n"
+        "pop edx\n";
+    switch (op_)
+    {
+    case Binop::Operator::Add:
+        strm << "add eax, edx\n";
+        break;
+    case Binop::Operator::Sub:
+        strm << "sub eax, edx\n";
+        break;
+    case Binop::Operator::Mul:
+        strm << "mul edx\n";
+        break;
+    case Binop::Operator::Div:
+        strm << "div eax, edx\n";
+        break;
+    case Binop::Operator::Mod:
+        strm << "add eax, edx\n";
+        break;
+    case Binop::Operator::Equal:
+        break;
+    case Binop::Operator::Greater:
+        break;
+    case Binop::Operator::Less:
+        break;
+    case Binop::Operator::Leq:
+        break;
+    case Binop::Operator::Geq:
+        break;
+    default:
+        break;
+    }
+    strm << "push eax\n";
+}
+
 Binop::Operator Binop::Convert(LowOperator op) const
 {
     switch (op)

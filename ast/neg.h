@@ -15,4 +15,5 @@ class Neg : public Exp
 		}
 
         void Pretty(std::ostream& strm) const;
+        void x86Gen(std::ostream& strm) const;
 };

@@ -10,6 +10,7 @@ class Binop : public Exp
 {
 public:
         virtual void Pretty(std::ostream& strm) const;
+        void x86Gen(std::ostream& strm) const;
 
         enum class Operator
         {
