@@ -21,14 +21,10 @@ enum class HighOperator
 };
 
 class Affect {};
-
 class If {};
-
 class Else {};
-
-class Return {};
-
 class TokEOF {};
+class Semicolon {};
 
 enum class CompOperator
 {
@@ -213,9 +209,19 @@ private:
         return strm_.peek() == '}';
     }
 
+	bool IsAffect()
+	{
+		return strm_.peek() == '=';
+	}
+
+	bool IsSemicolon()
+	{
+		return strm_.peek() == ';';
+	}
+
     void GetToken()
     {
-                Clean();
+		Clean();
         if (IsAlpha())
             GetAlpha();
         else if (IsNumeric())
@@ -227,19 +233,47 @@ private:
         else if (IsComparator())
             GetComparator();
         else if (IsLeftParenthesis())
+		{
+			strm_.get();
             tokens_.push_back(make_token<Token<Parenthesis>>(Parenthesis::LeftParenthesis));
+		}
         else if (IsRightParenthesis())
+		{
+			strm_.get();
             tokens_.push_back(make_token<Token<Parenthesis>>(Parenthesis::RightParenthesis));
+		}
         else if (IsLeftBracket())
+		{
+			strm_.get();
             tokens_.push_back(make_token<Token<Bracket>>(Bracket::LeftBracket));
+		}
         else if (IsRightBracket())
+		{
+			strm_.get();
             tokens_.push_back(make_token<Token<Bracket>>(Bracket::RightBracket));
+		}
         else if (IsLeftCurlyBracket())
+		{
+			strm_.get();
             tokens_.push_back(make_token<Token<CurlyBracket>>(CurlyBracket::LeftCurlyBracket));
+		}
         else if (IsRightCurlyBracket())
+		{
+			strm_.get();
             tokens_.push_back(make_token<Token<CurlyBracket>>(CurlyBracket::RightCurlyBracket));
-                else
-                        tokens_.push_back(make_token<Token<TokEOF>>(TokEOF()));
+		}
+		else if (IsAffect())
+		{
+			strm_.get();
+			tokens_.push_back(make_token<Token<Affect>>(Affect()));
+		}
+		else if (IsSemicolon())
+		{
+			strm_.get();
+			tokens_.push_back(make_token<Token<Semicolon>>(Semicolon()));
+		}
+		else
+			tokens_.push_back(make_token<Token<TokEOF>>(TokEOF()));
     }
 
 public:
@@ -281,7 +315,7 @@ public:
         }
 
     template <class TokenType>
-        Token<TokenType>* Peek(int lookahead = 1)
+        Token<TokenType>* Peek(int lookahead = 0)
         {
             int late = lookahead - tokens_.size() + 1;
             while (late)

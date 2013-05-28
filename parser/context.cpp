@@ -23,12 +23,12 @@ void Context::PopScope()
     vars_.pop_back();
 }
 
-void Context::DeclVar(const std::string& varname, Ast* decl)
+void Context::DeclVar(const std::string& varname, VarDecl* decl)
 {
 	vars_.back()[varname] = decl;
 }
 
-Ast* Context::GetVar(const std::string& varname) const
+VarDecl* Context::GetVar(const std::string& varname) const
 {
 	for (auto t = vars_.rbegin(); t != vars_.rend(); ++t)
 	{

@@ -4,12 +4,13 @@
 #include <vector>
 #include <map>
 
+#include "../ast/vardecl.h"
 #include "../ast/ast.h"
 
 class Context
 {
     public:
-        typedef std::map<std::string, Ast*> Scope;
+        typedef std::map<std::string, VarDecl*> Scope;
 
         Context();
         bool TypeExists(const std::string& ty) const;
@@ -18,8 +19,8 @@ class Context
         void PushScope();
         void PopScope();
 
-        void DeclVar(const std::string& varname, Ast* decl);
-        Ast* GetVar(const std::string& varname) const;
+        void DeclVar(const std::string& varname, VarDecl* decl);
+        VarDecl* GetVar(const std::string& varname) const;
 
     private:
         std::map<std::string, int> types_;

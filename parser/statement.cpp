@@ -69,3 +69,15 @@ std::unique_ptr<Ast> Parse(Lexer& in)
 	Context ctx;
 	return Stmt(in, ctx);
 }
+
+std::unique_ptr<Ast> ParseCompound(Lexer& in, Context& ctx)
+{
+	{
+		auto ifParser = ParseIf(in, ctx);
+	}
+}
+
+std::unique_ptr<Ast> ParseIf(Lexer& in, Context& ctx)
+{
+}
+std::unique_ptr<Ast> ParseCompound(Lexer& in, Context& ctx)
