@@ -3,9 +3,9 @@
 #include <memory>
 
 #include "ast.h"
-#include "exp.h"
 
 class Block;
+class Exp;
 
 class Control : public Ast
 {

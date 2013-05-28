@@ -4,12 +4,15 @@
 
 #include "../ast/statement.h"
 #include "../ast/vardecl.h"
-#include "../ast/return.h"
 #include "../lexer/lexer.h"
+#include "../ast/return.h"
+#include "../ast/block.h"
 #include "context.h"
 #include "parser.h"
 
 #include "../unique.h"
+
+static std::unique_ptr<Block> ParseBlock(Lexer& in, Context& ctx);
 
 std::unique_ptr<Statement> ParseVarDecl(Lexer& in, Context& ctx)
 {
@@ -48,9 +51,9 @@ std::unique_ptr<Statement> Stmt(Lexer& in, Context& ctx)
 
 	std::unique_ptr<Statement> res(nullptr);
 
-	if (ty && ty->value() == "return")
+    if (in.Is<Keyword>() && in.Peek<Keyword>()->value() == Keyword::Return)
 	{
-		in.Get<std::string>();
+		in.Get<Keyword>();
 		res = make_unique<Return>(ParseExp(in, ctx));
 	}
 	else
@@ -67,17 +70,69 @@ std::unique_ptr<Statement> Stmt(Lexer& in, Context& ctx)
 std::unique_ptr<Ast> Parse(Lexer& in)
 {
 	Context ctx;
-	return Stmt(in, ctx);
+	return ParseBlock(in, ctx);
 }
 
-std::unique_ptr<Ast> ParseCompound(Lexer& in, Context& ctx)
+std::unique_ptr<Control> ParseIf(Lexer& in, Context& ctx)
 {
-	{
-		auto ifParser = ParseIf(in, ctx);
-	}
+    auto ifk = in.Peek<Keyword>();
+    if (ifk && ifk->value() == Keyword::If)
+    {
+        in.Get<Keyword>();
+
+        if (!in.Is<Parenthesis>() || in.Get<Parenthesis>() != Parenthesis::LeftParenthesis)
+            throw std::exception("expected '(' after if keyword");
+
+        auto cond = ParseExp(in, ctx);
+
+        if (!in.Is<Parenthesis>() || in.Get<Parenthesis>() != Parenthesis::RightParenthesis)
+            throw std::exception("expected ')' after if condition");
+
+        auto if_block = ParseBlock(in, ctx);
+
+        std::unique_ptr<Block> else_block(nullptr);
+
+        ifk = in.Peek<Keyword>();
+
+        if (ifk && ifk->value() == Keyword::Else)
+        {
+            in.Get<Keyword>();
+            else_block = ParseBlock(in, ctx);
+        }
+
+        return make_unique<If>(cond, if_block, else_block);
+    }
+    throw std::exception("Why the fuck is my parser in an 'if' rule ?");
 }
 
-std::unique_ptr<Ast> ParseIf(Lexer& in, Context& ctx)
+std::unique_ptr<Control> ParseCompound(Lexer& in, Context& ctx)
 {
+    auto keyw = in.Peek<Keyword>();
+
+    if (keyw && keyw->value() == Keyword::If)
+        return ParseIf(in, ctx);
+    if (keyw && keyw->value() == Keyword::While)
+        return nullptr;
+    return Stmt(in, ctx);
 }
-std::unique_ptr<Ast> ParseCompound(Lexer& in, Context& ctx)
+
+std::unique_ptr<Block> ParseBlock(Lexer& in, Context& ctx)
+{
+    std::unique_ptr<Block> b = make_unique<Block>();
+
+    if (in.Is<CurlyBracket>()
+        && in.Get<CurlyBracket>() == CurlyBracket::LeftCurlyBracket)
+    {
+        ctx.PushScope();
+        while (!in.Is<CurlyBracket>())
+            b->push_back(ParseCompound(in, ctx));
+        ctx.PopScope();
+    }
+    else
+    {
+        ctx.PushScope();
+        b->push_back(ParseCompound(in, ctx));
+        ctx.PopScope();
+    }
+    return std::move(b);
+}

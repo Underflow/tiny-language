@@ -1,5 +1,6 @@
 #include "control.h"
 #include "block.h"
+#include "exp.h"
 
 If::If(std::unique_ptr<Exp>&& cond, std::unique_ptr<Block> if_clause,
 		std::unique_ptr<Block>&& else_clause)
@@ -15,15 +16,13 @@ void If::Pretty(std::ostream& strm) const
 	strm << "if (";
 	cond_->Pretty(strm);
 
-	strm << ")\n\n{";
+	strm << ")\n";
 	if_->Pretty(strm);
-	strm << "}";
 
 	if (else_)
 	{
-		strm << "else {\n\n";
+		strm << "else\n";
 		else_->Pretty(strm);
-		strm << "};\n";
 	}
 }
 

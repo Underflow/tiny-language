@@ -21,10 +21,16 @@ enum class HighOperator
 };
 
 class Affect {};
-class If {};
-class Else {};
 class TokEOF {};
 class Semicolon {};
+
+enum class Keyword
+{
+    If,
+    Else,
+    While,
+    Return
+};
 
 enum class CompOperator
 {
@@ -86,11 +92,18 @@ private:
     {
         std::string id;
 
+        Clean();
         while (IsAlpha())
             id += strm_.get();
 
-        Clean();
-        tokens_.push_back(make_token<Token<std::string>>(id));
+        if (id == "if")
+            tokens_.push_back(make_token<Token<Keyword>>(Keyword::If));
+        else if (id == "else")
+            tokens_.push_back(make_token<Token<Keyword>>(Keyword::Else));
+        else if (id == "return")
+            tokens_.push_back(make_token<Token<Keyword>>(Keyword::Return));
+        else
+            tokens_.push_back(make_token<Token<std::string>>(id));
     }
 
     bool IsNumeric()
