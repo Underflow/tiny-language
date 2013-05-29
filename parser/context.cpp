@@ -1,6 +1,7 @@
 #include "context.h"
 
 Context::Context()
+    : stack_offset_(0)
 {
     types_["int"] = 0;
     types_["float"] = 1;
@@ -16,15 +17,18 @@ bool Context::TypeExists(const std::string& ty) const
 void Context::PushScope()
 {
     vars_.push_back(Scope());
+    stack_offset_ = 0;
 }
 
 void Context::PopScope()
 {
     vars_.pop_back();
+    stack_offset_ = vars_.back().size();
 }
 
 void Context::DeclVar(const std::string& varname, VarDecl* decl)
 {
+    decl->stack_offset(stack_offset_);
     vars_.back()[varname] = decl;
 }
 
