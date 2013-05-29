@@ -22,7 +22,7 @@ enum class HighOperator
     Modulo
 };
 
-class Affect {};
+class AffectOp {};
 class TokEOF {};
 class Semicolon {};
 
@@ -41,6 +41,13 @@ enum class CompOperator
     Less,
     GreaterOrEqual,
     LessOrEqual
+};
+
+enum class LogicOperator
+{
+    And,
+    Or,
+    Not
 };
 
 enum class Bracket
@@ -104,6 +111,8 @@ class Lexer
             tokens_.push_back(make_token<Token<Keyword>>(Keyword::Else));
         else if (id == "return")
             tokens_.push_back(make_token<Token<Keyword>>(Keyword::Return));
+        else if (id == "while")
+            tokens_.push_back(make_token<Token<Keyword>>(Keyword::While));
         else
             tokens_.push_back(make_token<Token<std::string>>(id));
     }
@@ -280,7 +289,7 @@ class Lexer
         else if (IsAffect())
         {
             strm_.get();
-            tokens_.push_back(make_token<Token<Affect>>(Affect()));
+            tokens_.push_back(make_token<Token<AffectOp>>(AffectOp()));
         }
         else if (IsSemicolon())
         {

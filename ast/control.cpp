@@ -25,3 +25,15 @@ void If::Pretty(std::ostream& strm) const
     }
 }
 
+While::While(std::unique_ptr<Exp>&& cond, std::unique_ptr<Block>&& loop)
+    : cond_(std::move(cond)), loop_(std::move(loop))
+{
+}
+
+void While::Pretty(std::ostream& strm) const
+{
+    strm << "while (";
+    cond_->Pretty(strm);
+    strm << ")\n";
+    loop_->Pretty(strm);
+}

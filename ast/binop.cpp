@@ -53,6 +53,18 @@ Binop::Operator Binop::Convert(CompOperator op) const
     return Operator::Add;
 }
 
+Binop::Operator Binop::Convert(LogicOperator op) const
+{
+    switch (op)
+    {
+    case LogicOperator::And:
+        return Operator::And;
+    case LogicOperator::Or:
+        return Operator::Or;
+    case LogicOperator::Not:
+        return Operator::Not;
+    }
+}
 std::string Binop::Show(Binop::Operator op) const
 {
     switch (op)
@@ -67,6 +79,22 @@ std::string Binop::Show(Binop::Operator op) const
             return "/";
         case Binop::Operator::Mod:
             return "%";
+        case Binop::Operator::Equal:
+            return "==";
+        case Binop::Operator::Geq:
+            return ">=";
+        case Binop::Operator::Greater:
+            return ">";
+        case Binop::Operator::Leq:
+            return "<=";
+        case Binop::Operator::Less:
+            return "<";
+        case Binop::Operator::And:
+            return "and";
+        case Binop::Operator::Or:
+            return "or";
+        case Binop::Operator::Not:
+            return "not";
     }
     return "ERR";
 }

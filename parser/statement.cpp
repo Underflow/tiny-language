@@ -22,9 +22,9 @@ std::unique_ptr<Statement> ParseVarDecl(Lexer& in, Context& ctx)
         auto id = in.Get<std::string>();
 
         std::unique_ptr<Exp> val(nullptr);
-        if (in.Is<Affect>())
+        if (in.Is<AffectOp>())
         {
-            in.Get<Affect>();
+            in.Get<AffectOp>();
             val = ParseExp(in, ctx);
 
             if (in.Is<Semicolon>())
@@ -104,6 +104,27 @@ std::unique_ptr<Control> ParseIf(Lexer& in, Context& ctx)
     throw std::runtime_error("Why the fuck is my parser in an 'if' rule ?");
 }
 
+std::unique_ptr<Control> ParseWhile(Lexer& in, Context& ctx)
+{
+    in.Get<Keyword>();
+
+    if (in.Is<Parenthesis>()
+        && in.Get<Parenthesis>() == Parenthesis::LeftParenthesis)
+    {
+        auto cond = ParseExp(in, ctx);
+
+        if (!in.Is<Parenthesis>()
+            && in.Get<Parenthesis>() != Parenthesis::RightParenthesis)
+            throw std::runtime_error("expected ')' after while condition");
+
+        auto loop = ParseBlock(in, ctx);
+
+        return make_unique<While>(cond, loop);
+    }
+    else
+        throw std::runtime_error("expected '(' after keyword 'while'");
+}
+
 std::unique_ptr<Control> ParseCompound(Lexer& in, Context& ctx)
 {
     auto keyw = in.Peek<Keyword>();
@@ -111,7 +132,7 @@ std::unique_ptr<Control> ParseCompound(Lexer& in, Context& ctx)
     if (keyw && keyw->value() == Keyword::If)
         return ParseIf(in, ctx);
     if (keyw && keyw->value() == Keyword::While)
-        return nullptr;
+        return ParseWhile(in, ctx);
     return Stmt(in, ctx);
 }
 
@@ -125,6 +146,9 @@ std::unique_ptr<Block> ParseBlock(Lexer& in, Context& ctx)
         ctx.PushScope();
         while (!in.Is<CurlyBracket>())
             b->push_back(ParseCompound(in, ctx));
+        if (in.Get<CurlyBracket>() != CurlyBracket::RightCurlyBracket)
+        {
+        }
         ctx.PopScope();
     }
     else

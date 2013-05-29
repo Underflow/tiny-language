@@ -9,7 +9,7 @@
 
 class Context
 {
-    public:
+public:
     typedef std::map<std::string, VarDecl*> Scope;
 
     Context();
@@ -22,7 +22,8 @@ class Context
     void DeclVar(const std::string& varname, VarDecl* decl);
     VarDecl* GetVar(const std::string& varname) const;
 
-    private:
+private:
     std::map<std::string, int> types_;
     std::vector<Scope> vars_;
+    int stack_offset_;
 };
