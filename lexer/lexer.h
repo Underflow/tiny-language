@@ -104,6 +104,8 @@ class Lexer
             tokens_.push_back(make_token<Token<Keyword>>(Keyword::Else));
         else if (id == "return")
             tokens_.push_back(make_token<Token<Keyword>>(Keyword::Return));
+        else if (id == "while")
+            tokens_.push_back(make_token<Token<Keyword>>(Keyword::While));
         else
             tokens_.push_back(make_token<Token<std::string>>(id));
     }

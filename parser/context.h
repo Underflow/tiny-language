@@ -9,7 +9,7 @@
 
 class Context
 {
-    public:
+public:
     typedef std::map<std::string, VarDecl*> Scope;
 
     Context();

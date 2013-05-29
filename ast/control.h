@@ -17,8 +17,18 @@ class If : public Control
     std::unique_ptr<Block> if_;
     std::unique_ptr<Block> else_;
 
-    public:
+public:
     If(std::unique_ptr<Exp>&& cond, std::unique_ptr<Block> if_clause,
-            std::unique_ptr<Block>&& else_clause = nullptr);
+        std::unique_ptr<Block>&& else_clause = nullptr);
+    virtual void Pretty(std::ostream& in) const;
+};
+
+class While : public Control
+{
+    std::unique_ptr<Exp> cond_;
+    std::unique_ptr<Block> loop_;
+
+public:
+    While(std::unique_ptr<Exp>&& cond, std::unique_ptr<Block>&& loop);
     virtual void Pretty(std::ostream& in) const;
 };
