@@ -14,7 +14,8 @@ class Binop : public Exp
     enum class Operator
     {
         Add, Sub, Mul, Div, Mod,
-        Equal, Greater, Less, Leq, Geq
+        Equal, Greater, Less, Leq, Geq,
+        And, Or, Not
     };
 
     template <class Op>
@@ -29,6 +30,7 @@ class Binop : public Exp
     Operator Convert(LowOperator op) const;
     Operator Convert(HighOperator op) const;
     Operator Convert(CompOperator op) const;
+    Operator Convert(LogicOperator op) const;
     std::string Show(Operator op) const;
     std::unique_ptr<Exp> lhs_;
     Operator op_;

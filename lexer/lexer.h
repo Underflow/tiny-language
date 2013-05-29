@@ -22,7 +22,7 @@ enum class HighOperator
     Modulo
 };
 
-class Affect {};
+class AffectOp {};
 class TokEOF {};
 class Semicolon {};
 
@@ -41,6 +41,13 @@ enum class CompOperator
     Less,
     GreaterOrEqual,
     LessOrEqual
+};
+
+enum class LogicOperator
+{
+    And,
+    Or,
+    Not
 };
 
 enum class Bracket
@@ -282,7 +289,7 @@ class Lexer
         else if (IsAffect())
         {
             strm_.get();
-            tokens_.push_back(make_token<Token<Affect>>(Affect()));
+            tokens_.push_back(make_token<Token<AffectOp>>(AffectOp()));
         }
         else if (IsSemicolon())
         {

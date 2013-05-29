@@ -9,6 +9,7 @@ SET(sources
     ast/block.cpp
     ast/intlit.cpp
     ast/return.cpp
+    ast/affect.cpp
     ast/vardecl.cpp
     ast/control.cpp
     ast/statement.cpp
@@ -28,6 +29,7 @@ SET(sources
     ast/block.h
     ast/intlit.h
     ast/return.h
+    ast/affect.h
     ast/vardecl.h
     ast/control.h
     ast/statement.h

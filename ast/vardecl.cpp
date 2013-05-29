@@ -15,7 +15,5 @@ void VarDecl::Pretty(std::ostream& strm) const
         strm << " = ";
         val_->Pretty(strm);
     }
-
-    strm << ";\n";
 }
 

@@ -1,18 +1,20 @@
 #include <stdexcept>
 
+#include "parser.h"
 #include "context.h"
-#include "../lexer/lexer.h"
+#include "../unique.h"
 #include "../ast/exp.h"
 #include "../ast/var.h"
 #include "../ast/neg.h"
 #include "../ast/binop.h"
+#include "../ast/affect.h"
 #include "../ast/intlit.h"
-#include "../unique.h"
-#include "parser.h"
+#include "../lexer/lexer.h"
 
 static std::unique_ptr<Exp> LowExp(Lexer& in, Context& ctx);
 static std::unique_ptr<Exp> CompExp(Lexer& in, Context& ctx);
 static std::unique_ptr<Exp> HighExp(Lexer& in, Context& ctx);
+static std::unique_ptr<Exp> LogicExp(Lexer& in, Context& ctx);
 
 std::unique_ptr<Exp> Term(Lexer& in, Context& ctx)
 {
@@ -52,25 +54,9 @@ std::unique_ptr<Exp> LowExp(Lexer& in, Context& ctx)
     return lhs;
 }
 
-std::unique_ptr<Exp> CompExp(Lexer& in, Context& ctx)
-{
-    std::unique_ptr<Exp> lhs = LowExp(in, ctx);
-
-    while (in.Is<CompOperator>())
-    {
-        CompOperator op = in.Get<CompOperator>();
-
-        std::unique_ptr<Exp> rhs = LowExp(in, ctx);
-
-        lhs = make_unique<Binop>(std::move(lhs), op, std::move(rhs));
-    }
-
-    return lhs;
-}
-
 std::unique_ptr<Exp> ParseExp(Lexer& in, Context& ctx)
 {
-    return LowExp(in, ctx);
+    return AffectExp(in, ctx);
 }
 
 std::unique_ptr<Exp> Paren(Lexer& in, Context& ctx)
@@ -107,4 +93,50 @@ std::unique_ptr<Exp> HighExp(Lexer& in, Context& ctx)
     }
 
     return lhs;
+}
+
+std::unique_ptr<Exp> CompExp(Lexer& in, Context& ctx)
+{
+    std::unique_ptr<Exp> lhs = LowExp(in, ctx);
+
+    if (in.Is<CompOperator>())
+    {
+        CompOperator op = in.Get<CompOperator>();
+
+        std::unique_ptr<Exp> rhs = LowExp(in, ctx);
+
+        lhs = make_unique<Binop>(std::move(lhs), op, std::move(rhs));
+    }
+
+    return lhs;
+}
+
+std::unique_ptr<Exp> LogicExp(Lexer& in, Context& ctx)
+{
+    std::unique_ptr<Exp> lhs = CompExp(in, ctx);
+
+    while (in.Is<LogicOperator>())
+    {
+        LogicOperator op = in.Get<LogicOperator>();
+
+        std::unique_ptr<Exp> rhs = LowExp(in, ctx);
+
+        lhs = make_unique<Binop>(std::move(lhs), op, std::move(rhs));
+    }
+
+    return lhs;
+}
+
+std::unique_ptr<Exp> AffectExp(Lexer& in, Context& ctx)
+{
+    if (in.Peek<std::string>() && in.Peek<AffectOp>(1))
+    {
+        std::string name = in.Get<std::string>();
+        VarDecl* var = ctx.GetVar(name);
+        in.Get<AffectOp>();
+        auto val = LogicExp(in, ctx);
+        return make_unique<Affect>(var, val);
+    }
+    else
+        return LogicExp(in, ctx);
 }

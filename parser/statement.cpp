@@ -22,9 +22,9 @@ std::unique_ptr<Statement> ParseVarDecl(Lexer& in, Context& ctx)
         auto id = in.Get<std::string>();
 
         std::unique_ptr<Exp> val(nullptr);
-        if (in.Is<Affect>())
+        if (in.Is<AffectOp>())
         {
-            in.Get<Affect>();
+            in.Get<AffectOp>();
             val = ParseExp(in, ctx);
 
             if (in.Is<Semicolon>())
@@ -146,6 +146,9 @@ std::unique_ptr<Block> ParseBlock(Lexer& in, Context& ctx)
         ctx.PushScope();
         while (!in.Is<CurlyBracket>())
             b->push_back(ParseCompound(in, ctx));
+        if (in.Get<CurlyBracket>() != CurlyBracket::RightCurlyBracket)
+        {
+        }
         ctx.PopScope();
     }
     else

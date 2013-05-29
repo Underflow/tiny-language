@@ -9,7 +9,10 @@ void Block::Pretty(std::ostream& strm) const
 {
     strm << "{\n";
     for (auto& stmt : stmts_)
+    {
         stmt->Pretty(strm);
+        strm << "\n";
+    }
     strm << "}\n";
 }
 
