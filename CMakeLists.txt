@@ -5,6 +5,7 @@ SET(CMAKE_CXX_FLAGS "-std=c++0x")
 SET(sources
     ast/neg.cpp
     ast/var.cpp
+    ast/type.cpp
     ast/binop.cpp
     ast/block.cpp
     ast/intlit.cpp
@@ -12,8 +13,8 @@ SET(sources
     ast/affect.cpp
     ast/vardecl.cpp
     ast/control.cpp
+    ast/funcall.cpp
     ast/statement.cpp
-    ast/type.cpp
 
     lexer/main.cpp
 
@@ -33,6 +34,7 @@ SET(sources
     ast/affect.h
     ast/vardecl.h
     ast/control.h
+    ast/funcall.h
     ast/statement.h
 
     lexer/lexer.h

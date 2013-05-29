@@ -25,6 +25,7 @@ enum class HighOperator
 class AffectOp {};
 class TokEOF {};
 class Semicolon {};
+class Comma {};
 
 enum class Keyword
 {
@@ -295,6 +296,11 @@ class Lexer
         {
             strm_.get();
             tokens_.push_back(make_token<Token<Semicolon>>(Semicolon()));
+        }
+        else if (strm_.peek() == ',')
+        {
+            strm_.get();
+            tokens_.push_back(make_token<Token<Comma>>(Comma()));
         }
         else
             tokens_.push_back(make_token<Token<TokEOF>>(TokEOF()));

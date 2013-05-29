@@ -9,6 +9,7 @@
 #include "../ast/binop.h"
 #include "../ast/affect.h"
 #include "../ast/intlit.h"
+#include "../ast/funcall.h"
 #include "../lexer/lexer.h"
 
 static std::unique_ptr<Exp> LowExp(Lexer& in, Context& ctx);
@@ -16,6 +17,8 @@ static std::unique_ptr<Exp> CompExp(Lexer& in, Context& ctx);
 static std::unique_ptr<Exp> HighExp(Lexer& in, Context& ctx);
 static std::unique_ptr<Exp> LogicExp(Lexer& in, Context& ctx);
 static std::unique_ptr<Exp> AffectExp(Lexer& in, Context& ctx);
+static std::unique_ptr<Exp> FuncallExp(Lexer& in, Context& ctx);
+static std::vector<std::unique_ptr<Exp>> ParseArgs(Lexer& in, Context& ctx);
 
 std::unique_ptr<Exp> Term(Lexer& in, Context& ctx)
 {
@@ -25,10 +28,10 @@ std::unique_ptr<Exp> Term(Lexer& in, Context& ctx)
     {
         std::string var = in.Get<std::string>();
         auto par = in.Peek<Parenthesis>();
-        /*
-           if (par && par->value() == Parenthesis::LeftParenthesis)
-           return make_unique<Funcall>(var, ParseArgs(in, ctx));
-           */
+
+        if (par && par->value() == Parenthesis::LeftParenthesis)
+            return make_unique<Funcall>(var, ParseArgs(in, ctx));
+
         VarDecl* vd = ctx.GetVar(var);
         if (!vd)
             throw std::runtime_error("invalid identifier");
@@ -73,7 +76,7 @@ std::unique_ptr<Exp> Paren(Lexer& in, Context& ctx)
         {
             auto res = LowExp(in, ctx);
             if (in.Is<Parenthesis>()
-                    && in.Get<Parenthesis>() == Parenthesis::RightParenthesis)
+                && in.Get<Parenthesis>() == Parenthesis::RightParenthesis)
                 return res;
         }
     }
@@ -140,4 +143,25 @@ std::unique_ptr<Exp> AffectExp(Lexer& in, Context& ctx)
     }
     else
         return LogicExp(in, ctx);
+}
+
+std::vector<std::unique_ptr<Exp>> ParseArgs(Lexer& in, Context& ctx)
+{
+    in.Get<Parenthesis>();
+    std::vector<std::unique_ptr<Exp>> args;
+
+    auto closing = in.Peek<Parenthesis>();
+   
+    if (!closing || closing->value() != Parenthesis::RightParenthesis)
+    {
+        args.push_back(ParseExp(in, ctx));
+
+        if (!in.Is<Comma>())
+            throw std::runtime_error("arguments must be separated by a comma");
+
+        in.Get<Comma>();
+    }
+    in.Get<Parenthesis>();
+
+    return args;
 }
