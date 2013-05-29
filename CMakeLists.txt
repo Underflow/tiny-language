@@ -18,6 +18,23 @@ SET(sources
     parser/exp.cpp
     parser/context.cpp
     parser/statement.cpp
+
+
+
+
+    ast/neg.h
+    ast/var.h
+    ast/binop.h
+    ast/block.h
+    ast/intlit.h
+    ast/return.h
+    ast/vardecl.h
+    ast/control.h
+    ast/statement.h
+
+    lexer/lexer.h
+
+    parser/context.h
 )
 
 ADD_EXECUTABLE(lang ${sources})
