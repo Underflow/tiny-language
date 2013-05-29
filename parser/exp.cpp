@@ -15,6 +15,7 @@ static std::unique_ptr<Exp> LowExp(Lexer& in, Context& ctx);
 static std::unique_ptr<Exp> CompExp(Lexer& in, Context& ctx);
 static std::unique_ptr<Exp> HighExp(Lexer& in, Context& ctx);
 static std::unique_ptr<Exp> LogicExp(Lexer& in, Context& ctx);
+static std::unique_ptr<Exp> AffectExp(Lexer& in, Context& ctx);
 
 std::unique_ptr<Exp> Term(Lexer& in, Context& ctx)
 {
