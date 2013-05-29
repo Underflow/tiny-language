@@ -12,6 +12,7 @@ SET(sources
     ast/vardecl.cpp
     ast/control.cpp
     ast/statement.cpp
+    ast/type.cpp
 
     lexer/main.cpp
 
