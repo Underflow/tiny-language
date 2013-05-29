@@ -12,11 +12,11 @@ class VarDecl : public Statement
 {
 private:
     std::string varname_;
-    int type_;
+    Type& type_;
     std::unique_ptr<Exp> val_;
 
 public:
-    VarDecl(int type, const std::string& name, std::unique_ptr<Exp>&& val);
+    VarDecl(Type& ty, const std::string& name, std::unique_ptr<Exp>&& val);
     virtual void Pretty(std::ostream& strm) const;
 
     const std::string varname() const { return varname_; }
