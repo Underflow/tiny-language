@@ -12,7 +12,7 @@
 #include "../unique.h"
 
 
-std::unique_ptr<Statement> ParseVarDecl(Lexer& in, Context& ctx)
+std::unique_ptr<VarDecl> ParseVarDecl(Lexer& in, Context& ctx)
 {
     auto ty = in.Get<std::string>();
 
@@ -45,10 +45,9 @@ std::unique_ptr<Statement> Stmt(Lexer& in, Context& ctx)
     auto ty = in.Peek<std::string>();
 
     if (ty && ctx.TypeExists(ty->value()))
-        return ParseVarDecl(in, ctx);
+        return make_unique<Statement>(ParseVarDecl(in, ctx));
 
     std::unique_ptr<Statement> res(nullptr);
-
     if (in.Is<Keyword>() && in.Peek<Keyword>()->value() == Keyword::Return)
     {
         in.Get<Keyword>();
@@ -62,7 +61,7 @@ std::unique_ptr<Statement> Stmt(Lexer& in, Context& ctx)
     else
         throw std::runtime_error("expected ';'");
 
-    return std::move(res);
+    return make_unique<Statement>(std::move(res));
 }
 
 std::unique_ptr<Control> ParseIf(Lexer& in, Context& ctx)
@@ -126,7 +125,9 @@ std::unique_ptr<Control> ParseCompound(Lexer& in, Context& ctx)
         return ParseIf(in, ctx);
     if (keyw && keyw->value() == Keyword::While)
         return ParseWhile(in, ctx);
-    return Stmt(in, ctx);
+    std::unique_ptr<Statement> ptr;
+    ptr = Stmt(in, ctx);
+    return std::move(ptr);
 }
 
 std::unique_ptr<Block> ParseBlock(Lexer& in, Context& ctx)

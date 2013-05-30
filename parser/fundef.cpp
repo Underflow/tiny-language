@@ -83,17 +83,18 @@ std::unique_ptr<Fundef> FundeclOrDef(Lexer& in, Context& ctx)
 
 std::unique_ptr<Ast> ParseProgram(Lexer& in, Context& ctx)
 {
-    std::vector<std::unique_ptr<Ast>> pouet;
+    std::vector<std::unique_ptr<VarDecl>> vars;
+    std::vector<std::unique_ptr<Fundef>> funs;
 
     while (!in.Is<TokEOF>())
     {
         auto is_fun = in.Peek<Parenthesis>(2);
         if (is_fun && is_fun->value() == Parenthesis::LeftParenthesis)
-            pouet.push_back(FundeclOrDef(in, ctx));
+            funs.push_back(FundeclOrDef(in, ctx));
         else
-            pouet.push_back(ParseVarDecl(in, ctx));
+            vars.push_back(ParseVarDecl(in, ctx));
     }
-    return make_unique<Program>(std::move(pouet));
+    return make_unique<Program>(std::move(vars), std::move(funs));
 }
 
 std::unique_ptr<Ast> Parse(Lexer& in)

@@ -9,7 +9,7 @@ VarDecl::VarDecl(int ty, const std::string& name, std::unique_ptr<Exp>&& val)
 
 void VarDecl::Pretty(std::ostream& strm) const
 {
-    strm << type_ << " " << varname_;
+    strm << (type_ ? "float" : "int") << " " << varname_;
     if (val_)
     {
         strm << " = ";

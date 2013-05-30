@@ -24,8 +24,18 @@ std::unique_ptr<Exp> Term(Lexer& in, Context& ctx)
 {
     if (in.Is<int>())
         return make_unique<IntLit>(in.Get<int>());
-    if (in.Is<std::string>())
+    if (in.Is<std::string>() || in.Is<Ampersat>())
     {
+        if (in.Is<Ampersat>())
+        {
+            in.Get<Ampersat>();
+            std::string var = in.Get<std::string>();
+            auto par = in.Peek<Parenthesis>();
+
+            if (par && par->value() == Parenthesis::LeftParenthesis)
+                return make_unique<Funcall>(var, ParseArgs(in, ctx), true);
+
+        }
         std::string var = in.Get<std::string>();
         auto par = in.Peek<Parenthesis>();
 

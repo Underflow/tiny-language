@@ -26,6 +26,7 @@ class AffectOp {};
 class TokEOF {};
 class Semicolon {};
 class Comma {};
+class Ampersat {};
 
 enum class Keyword
 {
@@ -301,6 +302,11 @@ class Lexer
         {
             strm_.get();
             tokens_.push_back(make_token<Token<Comma>>(Comma()));
+        }
+        else if (strm_.peek() == '@')
+        {
+            strm_.get();
+            tokens_.push_back(make_token<Token<Ampersat>>(Ampersat()));
         }
         else
             tokens_.push_back(make_token<Token<TokEOF>>(TokEOF()));

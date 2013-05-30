@@ -9,4 +9,4 @@
 std::unique_ptr<Exp> ParseExp(Lexer& in, Context& ctx);
 std::unique_ptr<Ast> Parse(Lexer& in);
 std::unique_ptr<Block> ParseBlock(Lexer& in, Context& ctx);
-std::unique_ptr<Statement> ParseVarDecl(Lexer& in, Context& ctx);
+std::unique_ptr<VarDecl> ParseVarDecl(Lexer& in, Context& ctx);

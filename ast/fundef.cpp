@@ -2,7 +2,7 @@
 
 void Fundef::Pretty(std::ostream& strm) const
 {
-    strm << ret_type_ << " " << name_ << "(";
+    strm << (ret_type_ ? "float" : "int") << " " << name_ << "(";
     auto arg = args_.begin();
     (*arg)->Pretty(strm);
     ++arg;

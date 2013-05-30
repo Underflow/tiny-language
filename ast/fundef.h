@@ -22,5 +22,7 @@ public:
     virtual void Pretty(std::ostream& strm) const;
 
     void body(std::unique_ptr<Block>&& body) { body_ = std::move(body); }
+    const std::string& name() const { return name_; }
+    int nb_args() const { return args_.size(); }
 };
 
