@@ -1,12 +1,18 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+
 #include "ast.h"
 
 class Program : public Ast
 {
-    std::vector<VarDecl> vars_;
-    std::vector<FunDecl> fundec_;
+    std::vector<std::unique_ptr<Ast>> decls_;
 
-    public:
-    virtual void Pretty(std::ostream& strm);
+public:
+    virtual void Pretty(std::ostream& strm) const;
+    Program(std::vector<std::unique_ptr<Ast>>&& decls)
+        : decls_(std::move(decls))
+    {
+    }
 };

@@ -156,12 +156,15 @@ std::vector<std::unique_ptr<Exp>> ParseArgs(Lexer& in, Context& ctx)
     {
         args.push_back(ParseExp(in, ctx));
 
-        if (!in.Is<Comma>())
-            throw std::runtime_error("arguments must be separated by a comma");
+        while (in.Is<Comma>())
+        {
+            in.Get<Comma>();
+            args.push_back(ParseExp(in, ctx));
+        }
 
-        in.Get<Comma>();
     }
-    in.Get<Parenthesis>();
+    if (!in.Is<Parenthesis>() || in.Get<Parenthesis>() != Parenthesis::RightParenthesis)
+        throw std::runtime_error("arguments must be separated by a comma");
 
     return args;
 }

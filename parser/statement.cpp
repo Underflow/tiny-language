@@ -11,7 +11,6 @@
 
 #include "../unique.h"
 
-static std::unique_ptr<Block> ParseBlock(Lexer& in, Context& ctx);
 
 std::unique_ptr<Statement> ParseVarDecl(Lexer& in, Context& ctx)
 {
@@ -26,12 +25,12 @@ std::unique_ptr<Statement> ParseVarDecl(Lexer& in, Context& ctx)
         {
             in.Get<AffectOp>();
             val = ParseExp(in, ctx);
-
-            if (in.Is<Semicolon>())
-                in.Get<Semicolon>();
-            else
-                throw std::runtime_error("expected ';'");
         }
+        if (in.Is<Semicolon>())
+            in.Get<Semicolon>();
+        else
+            throw std::runtime_error("expected ';'");
+
         auto vd = make_unique<VarDecl>(ctx.TypeId(ty), id, std::move(val));
         ctx.DeclVar(id, vd.get());
 
@@ -64,12 +63,6 @@ std::unique_ptr<Statement> Stmt(Lexer& in, Context& ctx)
         throw std::runtime_error("expected ';'");
 
     return std::move(res);
-}
-
-std::unique_ptr<Ast> Parse(Lexer& in)
-{
-    Context ctx;
-    return ParseBlock(in, ctx);
 }
 
 std::unique_ptr<Control> ParseIf(Lexer& in, Context& ctx)
@@ -114,7 +107,7 @@ std::unique_ptr<Control> ParseWhile(Lexer& in, Context& ctx)
         auto cond = ParseExp(in, ctx);
 
         if (!in.Is<Parenthesis>()
-            && in.Get<Parenthesis>() != Parenthesis::RightParenthesis)
+            || in.Get<Parenthesis>() != Parenthesis::RightParenthesis)
             throw std::runtime_error("expected ')' after while condition");
 
         auto loop = ParseBlock(in, ctx);
@@ -159,3 +152,4 @@ std::unique_ptr<Block> ParseBlock(Lexer& in, Context& ctx)
     }
     return std::move(b);
 }
+
